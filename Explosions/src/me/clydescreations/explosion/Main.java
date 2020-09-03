@@ -13,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class Main extends JavaPlugin {
     public Main() {
@@ -118,15 +119,13 @@ public class Main extends JavaPlugin {
         getServer().dispatchCommand(getServer().getConsoleSender(), "scoreboard objectives setdisplay list deaths");
     }
 
-    public BossBar bossBar(Boolean action) {
+    private BossBar bossBar(Boolean action) {
         BossBar timerBar = Bukkit.createBossBar("00:00:00 ", BarColor.WHITE, BarStyle.SOLID);
         if(action) {
             getPlayers().forEach(timerBar::addPlayer);
         }else {
             getPlayers().forEach(timerBar::removePlayer);
         }
-        Bukkit.broadcastMessage(timerBar.getPlayers().toString());
-
         return timerBar;
     }
 
@@ -135,56 +134,59 @@ public class Main extends JavaPlugin {
     int min = 0;
     int sec = 0;
 
-    public void timer(BossBar timerBar) {
+    public void timer(BossBar timerBar, Boolean running) {
+        if (running) {
+            Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 
-       Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                @Override
+                public void run() {
 
-            @Override
-            public void run() {
+                    ++sec;
 
-                ++sec;
-
-                if(sec>59){
-                    sec = 0;
-                    ++min;
-                }
-                if(min>59){
-                    min = 0;
-                    ++hr;
-                }
-
-                String time;
-                if(hr<10){
-                    if(min<10){
-                        if(sec<10){
-                            time = "0"+hr+":0"+min+":0"+sec;
-                        }else {
-                            time = "0"+hr+":0"+min+":"+sec;
-                        }
-                    }else {
-                        time = "0"+hr+":"+min+":"+sec;
+                    if (sec > 59) {
+                        sec = 0;
+                        ++min;
                     }
-                }else {
-                    time = hr+":"+min+":"+sec;
+                    if (min > 59) {
+                        min = 0;
+                        ++hr;
+                    }
+
+                    String time;
+                    if (hr < 10) {
+                        if (min < 10) {
+                            if (sec < 10) {
+                                time = "0" + hr + ":0" + min + ":0" + sec;
+                            } else {
+                                time = "0" + hr + ":0" + min + ":" + sec;
+                            }
+                        } else {
+                            time = "0" + hr + ":" + min + ":" + sec;
+                        }
+                    } else {
+                        time = hr + ":" + min + ":" + sec;
+                    }
+                    timerBar.setTitle("Challenge Time - " + time);
+                    getPlayers().forEach(timerBar::addPlayer);
+
                 }
-                timerBar.setTitle("Challenge Time - " + time);
-                getPlayers().forEach(timerBar::addPlayer);
-            }
-        },0L, 20);
+            }, 0L, 20);
+        } else {
+            getServer().getScheduler().cancelTasks(this);
+        }
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("Ex-start")) {
             setScoreboard();
-            timer(bossBar(true));
+            timer(bossBar(true), true);
             runExplosion(true);
             return true;
         }
         if (label.equalsIgnoreCase("Ex-stop")) {
             if(sender instanceof Player){
                 runExplosion(false);
-                timer(bossBar(false));
-                getServer().getScheduler().cancelTasks(this);
+                timer(bossBar(false), false);
             }else {
                 return true;
             }
