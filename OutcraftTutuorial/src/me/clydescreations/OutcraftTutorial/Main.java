@@ -1,9 +1,10 @@
-package me.clydescreations.superfoods;
+package me.clydescreations.OutcraftTutorial;
 
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class SuperFoods extends JavaPlugin {
+import java.util.EventListener;
+
+public class Main extends JavaPlugin implements EventListener {
 
     @Override
     public void onDisable() {
@@ -14,5 +15,7 @@ public class SuperFoods extends JavaPlugin {
     public void onEnable() {
         super.onEnable();
     }
+
+
 
 }

@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="OutcraftTutuorial:jar">
+    <output-path>$USER_HOME$/Desktop/Minecraft Servers/Paper/1.15.2/plugins</output-path>
+    <root id="archive" name="OutcraftTutuorial.jar">
+      <element id="module-output" name="OutcraftTutuorial" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/Minecraft Servers/Spigot/1.15.2 Spigot Server/spigot-1.15.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
