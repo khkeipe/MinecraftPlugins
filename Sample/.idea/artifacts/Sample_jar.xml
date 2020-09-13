@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Sample:jar">
+    <output-path>$USER_HOME$/Desktop/Minecraft Servers/Paper/1.15.2 - Copy/plugins</output-path>
+    <root id="archive" name="Sample.jar">
+      <element id="module-output" name="Sample" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/Minecraft Servers/Spigot/1.16.2 Spigot Server/spigot-1.16.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
