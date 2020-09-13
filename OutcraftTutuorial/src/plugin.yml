@@ -1,4 +1,6 @@
 name: OutCraft_Tutorial
 author: Clyde's Creations
-version: 1.0.0
+version: 1.0.2
 main: me.clydescreations.OutcraftTutorial.Main
+
+api-version: 1.13

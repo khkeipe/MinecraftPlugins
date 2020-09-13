@@ -38,7 +38,7 @@ public class Main extends JavaPlugin {
                     warnPlayers(getPlayers());
                     explosion(player, getPlayers());
                 }
-            },0L, minute);
+            },0L, minute * 3);
         } else {
             Bukkit.broadcastMessage("Explosions have stopped");
             getServer().getScheduler().cancelTasks(this);
