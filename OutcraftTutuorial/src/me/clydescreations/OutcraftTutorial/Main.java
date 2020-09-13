@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -41,8 +41,8 @@ public class Main extends JavaPlugin implements Listener {
         List<String> players = playerConfig.getStringList("BOOK_GIVEN");
         String welcomMessage = getConfig().getString("WELCOME.MESSAGE").replace("[","").replace("]","").replace("{player}", event.getPlayer().getDisplayName());
 
-        if(!players.contains(event.getPlayer().getDisplayName())){
-            createGUI(event.getPlayer().getDisplayName());
+        if(!players.contains(event.getPlayer().getUniqueId().toString())){
+            createGUI(event.getPlayer().getUniqueId());
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', welcomMessage));
         }
 
@@ -55,7 +55,7 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    private static File playerList = new File("plugins/Outcraft_Tutorial/players.yml");
+    private static File playerList = new File("plugins/OutCraft_Tutorial/players.yml");
     private static FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerList);
 
     @EventHandler
@@ -63,20 +63,21 @@ public class Main extends JavaPlugin implements Listener {
         if(!click.getInventory().equals(gui)) return;
         if(click.getCurrentItem() == null) return;
         if(click.getCurrentItem().getItemMeta() == null) return;
-        if(click.getCurrentItem().getItemMeta().getDisplayName() == null) return;
 
         Player player = (Player) click.getWhoClicked();
 
         List<String> players = playerConfig.getStringList("BOOK_GIVEN");
 
-        if(!players.contains(player.getDisplayName())) {
-            players.add(player.getDisplayName());
+        if(!players.contains(player.getUniqueId().toString())) {
+            players.add(player.getUniqueId().toString());
             playerConfig.addDefault("BOOK_GIVEN", players);
             try {
                 playerConfig.options().copyDefaults(true);
                 playerConfig.save(playerList);
-                player.getInventory().addItem(book);
-                player.closeInventory();
+                player.getOpenInventory().close();
+                player.updateInventory();
+                player.getWorld().dropItemNaturally(player.getLocation(),book);
+                click.setCancelled(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -85,7 +86,7 @@ public class Main extends JavaPlugin implements Listener {
 
     private  ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
 
-    public void createGUI(String playerName) {
+    public void createGUI(UUID playerID) {
 
         String guiTitle = getConfig().get("GUI.TITLE").toString().replace("[","").replace("]","");
         String bookTitle = getConfig().get("BOOK.TITLE").toString().replace("[","").replace("]","");;
@@ -93,7 +94,7 @@ public class Main extends JavaPlugin implements Listener {
         List<String> bookPages = getConfig().getStringList("BOOK.PAGES");
         bookPages.forEach(page -> ChatColor.translateAlternateColorCodes('&', page).replace("[","").replace("]",""));
 
-        gui = Bukkit.createInventory(null, InventoryType.DROPPER, ChatColor.translateAlternateColorCodes('&', guiTitle));
+        gui = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', guiTitle));
 
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         try{
@@ -107,12 +108,18 @@ public class Main extends JavaPlugin implements Listener {
 
         book.setItemMeta(bookMeta);
 
-        gui.setItem(4, book);
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run() {
+                gui.setItem(4, book);
 
-        Player player = Bukkit.getPlayer(playerName);
+                Player player = Bukkit.getPlayer(playerID);
 
-        if (player != null) {
-            player.openInventory(gui);
-        }
+                if (player != null) {
+                    player.openInventory(gui);
+                }
+            }
+        },1L);
+
     }
 }
