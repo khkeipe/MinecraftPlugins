@@ -37,22 +37,26 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run() {
+                List<String> players = playerConfig.getStringList("BOOK_GIVEN");
+                String welcomMessage = getConfig().getString("WELCOME.MESSAGE").replace("[","").replace("]","").replace("{player}", event.getPlayer().getDisplayName());
 
-        List<String> players = playerConfig.getStringList("BOOK_GIVEN");
-        String welcomMessage = getConfig().getString("WELCOME.MESSAGE").replace("[","").replace("]","").replace("{player}", event.getPlayer().getDisplayName());
+                if(!players.contains(event.getPlayer().getUniqueId().toString())){
+                    createGUI(event.getPlayer().getUniqueId());
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', welcomMessage));
+                }
 
-        if(!players.contains(event.getPlayer().getUniqueId().toString())){
-            createGUI(event.getPlayer().getUniqueId());
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', welcomMessage));
-        }
-
-        if(!playerList.exists()){
-            try{
-                playerList.createNewFile();
-            }catch (Exception e) {
-                e.printStackTrace();
+                if(!playerList.exists()){
+                    try{
+                        playerList.createNewFile();
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+        }, 5L);
     }
 
     private static File playerList = new File("plugins/OutCraft_Tutorial/players.yml");
@@ -97,6 +101,7 @@ public class Main extends JavaPlugin implements Listener {
         gui = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', guiTitle));
 
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
+
         try{
             bookMeta.setTitle(ChatColor.translateAlternateColorCodes('&', bookTitle));
             bookMeta.setAuthor(ChatColor.translateAlternateColorCodes('&',bookAuthor));

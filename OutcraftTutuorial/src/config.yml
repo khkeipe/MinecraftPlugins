@@ -3,14 +3,16 @@ BOOK:
     - "&5OutCraft Tutorial"
   AUTHOR:
     - "&dOutCraft Administration"
+  # Each page can be a max of 256 characters
   PAGES:
-    - This is the first page of the tutorial
+    - Welcome to OutCraft
     - The second page goes here
 
 GUI:
   TITLE:
     - "&5OutCraft Tutorial"
 
+# Welcome message displayed when player joins for the first time
 WELCOME:
   MESSAGE:
-    - "&5Welcome {player} to the server"
+    - "&5Welcome {player} for their first time on the server"
