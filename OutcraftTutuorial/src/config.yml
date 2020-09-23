@@ -6,7 +6,7 @@ BOOK:
   # Each page can be a max of 256 characters
   PAGES:
     - Welcome to OutCraft
-    - The second page goes here
+    - Don't worry, if you lose this book you can craft another with purple carpet and a book
 
 GUI:
   TITLE:
@@ -16,3 +16,5 @@ GUI:
 WELCOME:
   MESSAGE:
     - "&5Welcome {player} for their first time on the server"
+
+# Craft a new tutorial book with purple carpet and a book
